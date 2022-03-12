@@ -75,13 +75,13 @@ class PrintersWrapper:
                 if printer.octoConnected:
                     tasks.append(asyncio.ensure_future(self.getApiPrinter(session, printer)))
             await asyncio.gather(*tasks)
-    
-    def run(self):
-        asyncio.run(self.fetchAllPrinters())
+
+    async def requestTask(self):
+        while(1):
+            await self.fetchAllPrinters()
+            await asyncio.sleep(1.0)
 
 if __name__ == '__main__':
     c = ConfigReader()
     pw = PrintersWrapper(c.getConfig())
-    # pw.getPrintersInfo()[0].printerState = 'new'
-    # print(pw.getPrintersInfo())
-    pw.run()
+    asyncio.run(pw.fetchAllPrinters())

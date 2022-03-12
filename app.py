@@ -6,20 +6,12 @@ from fastapi.templating import Jinja2Templates
 
 from printersRequester import PrintersWrapper
 from configReader import ConfigReader
-import time
-import threading
 import asyncio
 
 
 c = ConfigReader()
 pw = PrintersWrapper(c.getConfig())
-isThreadStarted = True
-async def requestTask():
-    while(1):
-        await pw.fetchAllPrinters()
-        time.sleep(1.0)
 
-requestThread = threading.Thread(target=requestTask)
 app = FastAPI()
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
@@ -51,7 +43,7 @@ printersInfo = [
 @app.on_event("startup")
 async def startup_event():
     loop = asyncio.get_event_loop()
-    task = loop.create_task(requestTask())
+    loop.create_task(pw.requestTask())
 
 @app.on_event("shutdown")
 async def shutdown_event():
@@ -59,5 +51,4 @@ async def shutdown_event():
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
-    pw.run()
     return templates.TemplateResponse("index.html", {"request": request, 'printersInfo': printersInfo})
