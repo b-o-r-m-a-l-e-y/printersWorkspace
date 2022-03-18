@@ -4,13 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Hugo 0.88.1">
-    <title>Album example · Bootstrap v5.1</title>
-
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/album/">
-
-    
+    <!-- <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors"> -->
+    <title>RySo Monitoring Panel</title>
 
     <!-- Bootstrap core CSS -->
 <link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -30,8 +25,10 @@
         }
       }
     </style>
-
-    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      setInterval(() => { $('#printers').load(document.URL+' #printers'); }, 5000)
+    </script>
   </head>
   <body>
     
@@ -81,8 +78,8 @@
     </div>
   </section> -->
 
-  <div class="album py-5 bg-light">
-    <div class="container">
+  <div class="album py-5 bg-light" >
+    <div class="container" id="printers">
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3">
         {% for printerInfo in printersInfo %}
           {% include 'printerCard.html' %}

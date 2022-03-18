@@ -15,6 +15,7 @@ class PrinterTelemetry:
 
 @dataclass
 class PrinterInfo:
+    id: int
     ip: str
     apiKey: str
     printerState: str
@@ -25,21 +26,26 @@ class PrintersWrapper:
     def __init__(self, config):
         self.printersInfo = []
         for printerFromConfig in config:
-            self.printersInfo.append(PrinterInfo(ip=printerFromConfig['ip'],
+            self.printersInfo.append(PrinterInfo(id=printerFromConfig['id'],
+                                                ip=printerFromConfig['ip'],
                                                 apiKey=printerFromConfig['apiKey'],
-                                                printerState='Closed',
+                                                printerState='closed',
                                                 telemetry=PrinterTelemetry(),
-                                                octoConnected=True))
+                                                octoConnected=False))
 
     def getPrintersInfo(self):
-        return self.printersInfo
+        dictArray = []
+        for printer in self.printersInfo:
+            dictArray.append(printer)
+        return dictArray
 
     async def getApiConnection(self, session: aiohttp.ClientSession, printerInfo: PrinterInfo):
         url = f"http://{printerInfo.ip}/api/connection?apikey={printerInfo.apiKey}"
         try:
             async with session.get(url) as resp:
                 data = await resp.json()
-                printerInfo.printerState = data['current']['state']
+                printerInfo.printerState = data['current']['state'].lower()
+                printerInfo.octoConnected = True
                 return data
         except aiohttp.ClientConnectionError:
             printerInfo.octoConnected = False
@@ -55,12 +61,16 @@ class PrintersWrapper:
                         flags = data['state']['flags']
                         if flags['operational']:
                             printerInfo.printerState = 'operational'
-                        if flags['printing']:
+                        elif flags['printing']:
                             printerInfo.printerState = 'printing'
                         else:
                             printerInfo.printerState = 'other'
-                except KeyError:
-                    print("keyerror catched")
+                    if 'bed' in data['temperature']:
+                        printerInfo.telemetry.bed = data['temperature']['bed']['actual']
+                    if 'tool0' in data['temperature']:
+                        printerInfo.telemetry.hotend = data['temperature']['tool0']['actual']
+                except KeyError as e:
+                    print("keyerror catched", e)
                 return data
         except aiohttp.ClientConnectionError:
             printerInfo.octoConnected = False
@@ -72,7 +82,7 @@ class PrintersWrapper:
             tasks = []
             for printer in self.printersInfo:
                 tasks.append(asyncio.ensure_future(self.getApiConnection(session, printer)))
-                if printer.octoConnected:
+                if printer.printerState != 'closed':
                     tasks.append(asyncio.ensure_future(self.getApiPrinter(session, printer)))
             await asyncio.gather(*tasks)
 

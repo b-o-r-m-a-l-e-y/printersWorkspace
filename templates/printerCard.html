@@ -3,19 +3,36 @@
       {% if printerInfo.octoConnected %}
         {% if printerInfo.printerState == 'printing' %}
           <div class="card-header bg-success text-white text-center fw-bolder">Printing</div>
+          <img src="{{ "http://" + printerInfo.ip + "/webcam/?action=stream" }}" alt="..." class="img-fluid">
         {% elif printerInfo.printerState == 'operational' %}
           <div class="card-header bg-warning text-dark text-center fw-bolder">Waiting</div>
+          <img src="{{ "http://" + printerInfo.ip + "/webcam/?action=stream" }}" alt="..." class="img-fluid">
+        {% else %}
+          <div class="card-header bg-warning text-dark text-center fw-bolder">Octoprint online. Printer error</div>
+          <div class="d-flex justify-content-center">
+            <div class="spinner-border m-5" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
         {% endif %}
       {% else %}
-        <div class="card-header bg-danger text-white text-center fw-bolder">No connection</div>
+        <div class="card-header bg-danger text-white text-center fw-bolder">No connection to Octoprint</div>
+        <div class="d-flex justify-content-center">
+          <div class="spinner-border m-5" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
       {% endif %}
-      <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+      <!-- <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg> -->
       <a href={{ "http://" + printerInfo.ip }} class="btn btn-outline-secondary">Go to printer</a>
       <button type="button" class="btn btn-primary">Load file and start print</button>
       <div class="card-body">
-        <h5 class="card-title">Success card title</h5>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-        <p class="card-text"><small class="text-muted">Last updated 9 mins ago</small></p>
+        {% if printerInfo.printerState == 'printing' or printerInfo.printerState == 'operational' %}
+          <p class="card-title">Bed temperature: {{ printerInfo.telemetry.bed }}</p>
+          <p class="card-title">Hotend temperature: {{ printerInfo.telemetry.hotend }}</p>
+        {% else %}
+          <p class="card-text">No temperature data</p>
+        {% endif %}
       </div>
     </div>
   </div>
