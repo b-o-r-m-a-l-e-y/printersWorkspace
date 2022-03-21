@@ -25,7 +25,11 @@
       {% endif %}
       <!-- <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg> -->
       <a href={{ "http://" + printerInfo.ip }} class="btn btn-outline-secondary">Go to printer</a>
-      <button type="button" class="btn btn-primary">Load file and start print</button>
+      <!-- <input type="file" class="btn btn-primary">Load file and start print
+        <input type="file" id="{{ "uploadFile" + printerInfo.id|string }}" hidden/>
+      </button>  -->
+      <input id="uploadFile" type="file" hidden/>
+      <button type="button" class="btn btn-primary" value="" onclick="document.getElementById('uploadFile').click();">Load file and start print</button>
       <div class="card-body">
         {% if printerInfo.printerState == 'printing' or printerInfo.printerState == 'operational' %}
           <p class="card-title">Bed temperature: {{ printerInfo.telemetry.bed }}</p>
