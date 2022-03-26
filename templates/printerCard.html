@@ -28,8 +28,9 @@
       <!-- <input type="file" class="btn btn-primary">Load file and start print
         <input type="file" id="{{ "uploadFile" + printerInfo.id|string }}" hidden/>
       </button>  -->
-      <input id="uploadFile" type="file" hidden/>
-      <button type="button" class="btn btn-primary" value="" onclick="document.getElementById('uploadFile').click();">Load file and start print</button>
+      <input id={{ "uploadFile" + printerInfo.id|string }} type="file" hidden/>
+      <button type="button" class="btn btn-primary" onclick="document.getElementById('{{ "uploadFile" +
+                                           printerInfo.id|string }}').click();">Load file and start print</button>
       <div class="card-body">
         {% if printerInfo.printerState == 'printing' or printerInfo.printerState == 'operational' %}
           <p class="card-title">Bed temperature: {{ printerInfo.telemetry.bed }}</p>
@@ -38,5 +39,13 @@
           <p class="card-text">No temperature data</p>
         {% endif %}
       </div>
+      <script>
+        // Add a listener on your input
+        // It will be triggered when a file will be selected
+        document.getElementById('{{ "uploadFile" + printerInfo.id|string }}').addEventListener('change',
+        () => upload(document.getElementById('{{ "uploadFile" + printerInfo.id|string }}').files[0],
+        '/upload/{{ printerInfo.id|string }}'),
+         false);
+      </script>
     </div>
   </div>

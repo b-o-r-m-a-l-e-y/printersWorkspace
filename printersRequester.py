@@ -40,9 +40,10 @@ class PrintersWrapper:
         return dictArray
 
     async def getApiConnection(self, session: aiohttp.ClientSession, printerInfo: PrinterInfo):
-        url = f"http://{printerInfo.ip}/api/connection?apikey={printerInfo.apiKey}"
+        url = f"http://{printerInfo.ip}/api/connection"
+        header={'X-Api-Key': printerInfo.apiKey}
         try:
-            async with session.get(url) as resp:
+            async with session.get(url, headers=header) as resp:
                 data = await resp.json()
                 printerInfo.printerState = data['current']['state'].lower()
                 printerInfo.octoConnected = True
@@ -53,8 +54,9 @@ class PrintersWrapper:
 
     async def getApiPrinter(self, session: aiohttp.ClientSession, printerInfo: PrinterInfo):
         url = f"http://{printerInfo.ip}/api/printer?apikey={printerInfo.apiKey}"
+        header={'X-Api-Key': printerInfo.apiKey}
         try:
-            async with session.get(url) as resp:
+            async with session.get(url, headers=header) as resp:
                 data = await resp.json()
                 try:
                     if 'flags' in data['state']:

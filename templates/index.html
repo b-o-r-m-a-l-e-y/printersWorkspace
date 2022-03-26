@@ -25,9 +25,24 @@
         }
       }
     </style>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="./assets/jquery-3.6.0.min.js"></script>
     <script>
       setInterval(() => { $('#printers').load(document.URL+' #printers'); }, 5000)
+      // This will upload the file after having read it
+      let upload = (file, url) => {
+        data = new FormData();
+        data.append('file', file);
+        fetch(url, { // Your POST endpoint
+          method: 'POST',
+          body: data // This is your file object
+        }).then(
+          response => response.json() // if the response is a JSON object
+        ).then(
+          success => console.log(success) // Handle the success response object
+        ).catch(
+          error => console.log(error) // Handle the error response object
+        );
+      };
     </script>
   </head>
   <body>
