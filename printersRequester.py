@@ -51,6 +51,8 @@ class PrintersWrapper:
         except aiohttp.ClientConnectionError:
             printerInfo.octoConnected = False
             print(f'No connection to printer with ip {printerInfo.ip}')
+        except Exception as e:
+            print(e)
 
     async def getApiPrinter(self, session: aiohttp.ClientSession, printerInfo: PrinterInfo):
         url = f"http://{printerInfo.ip}/api/printer?apikey={printerInfo.apiKey}"
@@ -77,6 +79,8 @@ class PrintersWrapper:
         except aiohttp.ClientConnectionError:
             printerInfo.octoConnected = False
             print(f'No connection to printer with ip {printerInfo.ip}')
+        except Exception as e:
+            print(e)
 
     async def fetchAllPrinters(self):
         session_timeout = aiohttp.ClientTimeout(total=None,sock_connect=2,sock_read=2)
